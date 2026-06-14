@@ -13,6 +13,7 @@
 #include "dashboard.h"
 #include "ft85bd_uart.h"
 #include "storage.h"
+#include "ui_adapter.h"
 
 #include <Arduino.h>
 #include "pincfg.h"

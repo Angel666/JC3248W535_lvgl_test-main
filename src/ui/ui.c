@@ -31,6 +31,7 @@ void ui_init(void)
                                                true, LV_FONT_DEFAULT);
     lv_disp_set_theme(dispp, theme);
     ui_mainScreen_screen_init();
+    ui_infoScreen_screen_init();
     ui____initial_actions0 = lv_obj_create(NULL);
     lv_disp_load_scr(ui_mainScreen);
 }
@@ -38,9 +39,11 @@ void ui_init(void)
 void ui_destroy(void)
 {
     ui_mainScreen_screen_destroy();
+    ui_infoScreen_screen_destroy();
 }
 
 void ui_relocalize(void)
 {
     ui_mainScreen_screen_relocalize();
+    ui_infoScreen_screen_relocalize();
 }

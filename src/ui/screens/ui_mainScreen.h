@@ -31,6 +31,8 @@ extern lv_obj_t * ui_lblMotorTmp;
 extern lv_obj_t * ui_lblFault;
 extern lv_obj_t * ui_lblTrip;
 extern lv_obj_t * ui_lblOdo;
+extern void ui_event_btnInfo(lv_event_t * e);
+extern lv_obj_t * ui_btnInfo;
 // CUSTOM VARIABLES
 
 #ifdef __cplusplus

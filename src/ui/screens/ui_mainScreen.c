@@ -22,7 +22,16 @@ lv_obj_t * ui_lblMotorTmp = NULL;
 lv_obj_t * ui_lblFault = NULL;
 lv_obj_t * ui_lblTrip = NULL;
 lv_obj_t * ui_lblOdo = NULL;
+lv_obj_t * ui_btnInfo = NULL;
 // event funtions
+void ui_event_btnInfo(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+        _ui_screen_change(&ui_infoScreen, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, &ui_infoScreen_screen_init);
+    }
+}
 
 // build funtions
 
@@ -173,6 +182,17 @@ void ui_mainScreen_screen_init(void)
     lv_obj_set_align(ui_lblOdo, LV_ALIGN_CENTER);
     lv_label_set_text(ui_lblOdo, "ODO: 1321 km");
 
+    ui_btnInfo = lv_button_create(ui_mainScreen);
+    lv_obj_set_width(ui_btnInfo, 100);
+    lv_obj_set_height(ui_btnInfo, 50);
+    lv_obj_set_x(ui_btnInfo, -4);
+    lv_obj_set_y(ui_btnInfo, 199);
+    lv_obj_set_align(ui_btnInfo, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_btnInfo, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
+    lv_obj_remove_flag(ui_btnInfo, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
+    lv_obj_add_event_cb(ui_btnInfo, ui_event_btnInfo, LV_EVENT_ALL, NULL);
+
 }
 
 void ui_mainScreen_screen_destroy(void)
@@ -197,6 +217,7 @@ void ui_mainScreen_screen_destroy(void)
     ui_lblFault = NULL;
     ui_lblTrip = NULL;
     ui_lblOdo = NULL;
+    ui_btnInfo = NULL;
 
 }
 

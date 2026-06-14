@@ -31,12 +31,6 @@ struct BikeData
     // Заполнение ШИМ (0...100%)
     float duty_cycle = 0.0f;
 
-    // Загрузка CPU контроллера
-    float cpu_load = 0.0f;
-
-    // Угол энкодера
-    float encoder_angle = 0.0f;
-
     // пользовательские
 
     int pas_level = 0;
@@ -60,6 +54,19 @@ struct BikeData
 
     bool moving = false;
     bool pedaling = false;
+
+    // ===== НОВЫЕ ПОЛЯ ДЛЯ ОТОБРАЖЕНИЯ =====
+    char firmware_version[16];      // Версия прошивки ESC
+    uint8_t speed_limit_gear;       // 0=нет,1=низ,2=сред,3=выс,4=реверс
+    uint8_t motor_direction;        // 0=вперед, 1=назад
+    bool cruise_enabled;            // Круиз разрешен
+    bool cruise_active;             // Круиз активен
+    uint8_t multi_mode_type;        // Тип мульти-режима
+    float cpu_load;                 // Загрузка CPU (%)
+    float encoder_angle;            // Угол энкодера (градусы)
+    float pas_rpm_display;          // PAS RPM для отображения
+    uint8_t error_code;             // Детальный код ошибки
+    uint8_t controller_id;          // ID контроллера
 };
 
 extern BikeData bikeData;
