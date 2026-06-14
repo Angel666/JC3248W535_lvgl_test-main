@@ -26,8 +26,6 @@ void ui_set_status(bool online);
 
 void ui_set_rpm(float rpm);
 
-void ui_set_motor_temp(float temp);
-
 void ui_set_fault(int fault);
 
 void ui_set_trip(float km);
