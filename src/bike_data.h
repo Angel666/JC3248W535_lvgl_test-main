@@ -34,7 +34,6 @@ struct BikeData
     // пользовательские
 
     int pas_level = 0;
-    float pas_rpm = 0.0f;
 
     bool bluetooth_connected = false;
 
@@ -57,18 +56,21 @@ struct BikeData
     bool moving = false;
     bool pedaling = false;
 
-    // ===== НОВЫЕ ПОЛЯ ДЛЯ ОТОБРАЖЕНИЯ =====
-    char firmware_version[16];      // Версия прошивки ESC
-    uint8_t speed_limit_gear;       // 0=нет,1=низ,2=сред,3=выс,4=реверс
-    uint8_t motor_direction;        // 0=вперед, 1=назад
-    bool cruise_enabled;            // Круиз разрешен
-    bool cruise_active;             // Круиз активен
-    uint8_t multi_mode_type;        // Тип мульти-режима
-    float cpu_load;                 // Загрузка CPU (%)
-    float encoder_angle;            // Угол энкодера (градусы)
-    float pas_rpm_display;          // PAS RPM для отображения
-    uint8_t error_code;             // Детальный код ошибки
-    uint8_t controller_id;          // ID контроллера
+    // ===== НОВЫЕ ПОЛЯ (для второго экрана) =====
+    char firmware_version[16];
+    uint8_t speed_limit_gear;
+    uint8_t motor_direction;
+    bool cruise_enabled;
+    bool cruise_active;
+    bool cruise_requested;         // Запрос на включение круиза
+    uint8_t current_gear;          // Текущая передача (0-3)
+    float target_current;          // Целевой ток (А) — из настроек
+    uint8_t multi_mode_type;
+    float cpu_load;
+    float encoder_angle;
+    float pas_rpm;
+    uint8_t error_code;
+    uint8_t controller_id;
 };
 
 extern BikeData bikeData;

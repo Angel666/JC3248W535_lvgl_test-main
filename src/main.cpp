@@ -15,6 +15,7 @@
 #include "storage.h"
 #include "ui_adapter.h"
 #include "ble_bridge.h"
+#include "buttons.h"
 
 #include <Arduino.h>
 #include "pincfg.h"
@@ -150,6 +151,9 @@ void setup() {
     // lv_demo_music();
     // lv_demo_stress();
 
+   
+    
+   buttons_init();
    ft85bd_init(); 
    ui_init();
    ble_bridge_init();
@@ -160,6 +164,10 @@ void setup() {
    bikeData.battery_power = 0;
    bikeData.controller_temp = 0;
    bikeData.pas_level = 0;
+   // Установка начальных значений
+   bikeData.current_gear = 0;
+   bikeData.target_current = 15.0f;  // 15A (можно позже брать из настроек)
+   bikeData.cruise_requested = false;
   
 }
 
@@ -168,7 +176,8 @@ void loop() {
     dashboard_update();
     lv_task_handler();
     gfx->flush();
-    // 3. Обновление BLE моста (отправка данных на телефон)
+    // 3. Обновление BLE моста отправка данных на телефон
     ble_bridge_update();
+    buttons_update();  // Проверка кнопок
    
 }

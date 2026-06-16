@@ -40,3 +40,8 @@ extern FT85BD_Data esc_data;
 void ft85bd_init();
 void ft85bd_update();
 void ft85bd_request_data();
+void ft85bd_set_current_gear_and_obtain(float current_amps, uint8_t gear);
+void ft85bd_send_packet(uint8_t *payload, uint8_t payload_len);
+void ft85bd_request_extended_data(void);
+void ft85bd_request_firmware(void);
+void ft85bd_enable_auto_data(bool enable, uint16_t frequency_hz);

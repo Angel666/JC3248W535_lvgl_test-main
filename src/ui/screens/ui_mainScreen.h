@@ -33,6 +33,18 @@ extern lv_obj_t * ui_lblTrip;
 extern lv_obj_t * ui_lblOdo;
 extern void ui_event_btnInfo(lv_event_t * e);
 extern lv_obj_t * ui_btnInfo;
+extern lv_obj_t * ui_txtPower;
+extern lv_obj_t * ui_txtVolt;
+extern lv_obj_t * ui_txtCurrent;
+extern lv_obj_t * ui_txtTemp;
+extern lv_obj_t * ui_txtPas;
+extern lv_obj_t * ui_txtRpm;
+extern lv_obj_t * ui_txtMotorTmp;
+extern lv_obj_t * ui_txtTrip;
+extern lv_obj_t * ui_txtOdo;
+extern lv_obj_t * ui_txtInfo;
+extern lv_obj_t * ui_lblGearDisplay;
+extern lv_obj_t * ui_lblCruiseStatus;
 // CUSTOM VARIABLES
 
 #ifdef __cplusplus

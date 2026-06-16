@@ -70,17 +70,41 @@ void dashboard_update()
 
      // ===== НОВЫЕ ВЫЗОВЫ ДЛЯ ВТОРОГО ЭКРАНА =====
     ui_set_firmware_version(bikeData.firmware_version);
+
     ui_set_speed_gear(bikeData.speed_limit_gear);
+
     ui_set_motor_direction(bikeData.motor_direction);
+
     ui_set_cruise_status(bikeData.cruise_enabled, bikeData.cruise_active);
+
     ui_set_multi_mode(bikeData.multi_mode_type);
+
     ui_set_cpu_load(bikeData.cpu_load);
+
     ui_set_encoder_angle(bikeData.encoder_angle);
-    ui_set_pas_rpm(bikeData.pas_rpm_display);
+
+    ui_set_pas_rpm(bikeData.pas_rpm);
+
     ui_set_error_code(bikeData.error_code);
+
     ui_set_controller_id(bikeData.controller_id);
 
     //BT status
     ui_set_ble_status(bikeData.ble_connected);
+
+    // ===== ОТОБРАЖЕНИЕ СТАТУСА УПРАВЛЕНИЯ =====
+    const char* gear_names[] = {"OFF", "LOW", "MED", "HIGH"};
+    if(bikeData.current_gear <= 3) {
+        lv_label_set_text(ui_lblGearDisplay, gear_names[bikeData.current_gear]);
+    }
+
+    // Статус круиза
+    if(bikeData.cruise_active || bikeData.cruise_requested) {
+        lv_label_set_text(ui_lblCruiseStatus, "CRUISE ON");
+        lv_obj_set_style_text_color(ui_lblCruiseStatus, lv_color_hex(0x00FF00), 0);
+    } else {
+        lv_label_set_text(ui_lblCruiseStatus, "CRUISE OFF");
+        lv_obj_set_style_text_color(ui_lblCruiseStatus, lv_color_hex(0x888888), 0);
+    }
 
 }

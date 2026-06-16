@@ -38,18 +38,28 @@ void ui_set_pedaling(bool pedaling);
 
 // ===== НОВЫЕ ФУНКЦИИ ДЛЯ РАСШИРЕННЫХ ДАННЫХ =====
 void ui_set_firmware_version(const char* version);
+
 void ui_set_speed_gear(uint8_t gear);
+
 void ui_set_motor_direction(uint8_t direction);
+
 void ui_set_cruise_status(bool enabled, bool active);
+
 void ui_set_multi_mode(uint8_t mode);
+
 void ui_set_cpu_load(float load);
+
 void ui_set_encoder_angle(float angle);
+
 void ui_set_pas_rpm(float rpm);
+
 void ui_set_error_code(uint8_t error_code);
+
 void ui_set_controller_id(uint8_t id);
 
 // Функции для переключения экранов
 void ui_switch_to_main_screen(void);
+
 void ui_switch_to_info_screen(void);
 
 //BT status

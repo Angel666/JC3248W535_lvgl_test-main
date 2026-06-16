@@ -23,6 +23,18 @@ lv_obj_t * ui_lblFault = NULL;
 lv_obj_t * ui_lblTrip = NULL;
 lv_obj_t * ui_lblOdo = NULL;
 lv_obj_t * ui_btnInfo = NULL;
+lv_obj_t * ui_txtPower = NULL;
+lv_obj_t * ui_txtVolt = NULL;
+lv_obj_t * ui_txtCurrent = NULL;
+lv_obj_t * ui_txtTemp = NULL;
+lv_obj_t * ui_txtPas = NULL;
+lv_obj_t * ui_txtRpm = NULL;
+lv_obj_t * ui_txtMotorTmp = NULL;
+lv_obj_t * ui_txtTrip = NULL;
+lv_obj_t * ui_txtOdo = NULL;
+lv_obj_t * ui_txtInfo = NULL;
+lv_obj_t * ui_lblGearDisplay = NULL;
+lv_obj_t * ui_lblCruiseStatus = NULL;
 // event funtions
 void ui_event_btnInfo(lv_event_t * e)
 {
@@ -65,9 +77,9 @@ void ui_mainScreen_screen_init(void)
     lv_obj_set_width(ui_lblWatt, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_lblWatt, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_lblWatt, 0);
-    lv_obj_set_y(ui_lblWatt, -53);
+    lv_obj_set_y(ui_lblWatt, -50);
     lv_obj_set_align(ui_lblWatt, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_lblWatt, "750W");
+    lv_label_set_text(ui_lblWatt, "0");
     lv_obj_set_style_text_color(ui_lblWatt, lv_color_hex(0xE27E0B), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_lblWatt, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_lblWatt, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -78,15 +90,19 @@ void ui_mainScreen_screen_init(void)
     lv_obj_set_x(ui_lblVolt, 0);
     lv_obj_set_y(ui_lblVolt, -25);
     lv_obj_set_align(ui_lblVolt, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_lblVolt, "Voltage: 54.2V");
+    lv_label_set_text(ui_lblVolt, "0");
+    lv_obj_set_style_text_color(ui_lblVolt, lv_color_hex(0xE27E0B), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_lblVolt, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_lblVolt, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_lblCurrent = lv_label_create(ui_mainScreen);
     lv_obj_set_width(ui_lblCurrent, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_lblCurrent, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_lblCurrent, 0);
-    lv_obj_set_y(ui_lblCurrent, -1);
     lv_obj_set_align(ui_lblCurrent, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_lblCurrent, "Current: 20A");
+    lv_label_set_text(ui_lblCurrent, "0");
+    lv_obj_set_style_text_color(ui_lblCurrent, lv_color_hex(0xE27E0B), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_lblCurrent, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_lblCurrent, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_lblTemp = lv_label_create(ui_mainScreen);
     lv_obj_set_width(ui_lblTemp, LV_SIZE_CONTENT);   /// 1
@@ -94,17 +110,21 @@ void ui_mainScreen_screen_init(void)
     lv_obj_set_x(ui_lblTemp, 0);
     lv_obj_set_y(ui_lblTemp, 25);
     lv_obj_set_align(ui_lblTemp, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_lblTemp, "Mosfet: 49C");
+    lv_label_set_text(ui_lblTemp, "0");
+    lv_obj_set_style_text_color(ui_lblTemp, lv_color_hex(0xE27E0B), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_lblTemp, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_lblTemp, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_lblPas = lv_label_create(ui_mainScreen);
     lv_obj_set_width(ui_lblPas, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_lblPas, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_lblPas, 0);
-    lv_obj_set_y(ui_lblPas, 54);
+    lv_obj_set_y(ui_lblPas, 50);
     lv_obj_set_align(ui_lblPas, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_lblPas, "PAS 3");
+    lv_label_set_text(ui_lblPas, "0");
     lv_obj_set_style_text_color(ui_lblPas, lv_color_hex(0x5ED904), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_lblPas, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_lblPas, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_contStatus = lv_obj_create(ui_mainScreen);
     lv_obj_remove_style_all(ui_contStatus);
@@ -145,17 +165,23 @@ void ui_mainScreen_screen_init(void)
     lv_obj_set_width(ui_lblRpm, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_lblRpm, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_lblRpm, 0);
-    lv_obj_set_y(ui_lblRpm, 79);
+    lv_obj_set_y(ui_lblRpm, 75);
     lv_obj_set_align(ui_lblRpm, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_lblRpm, "750 rpm");
+    lv_label_set_text(ui_lblRpm, "0");
+    lv_obj_set_style_text_color(ui_lblRpm, lv_color_hex(0xE27E0B), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_lblRpm, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_lblRpm, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_lblMotorTmp = lv_label_create(ui_mainScreen);
     lv_obj_set_width(ui_lblMotorTmp, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_lblMotorTmp, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_lblMotorTmp, 0);
-    lv_obj_set_y(ui_lblMotorTmp, 103);
+    lv_obj_set_y(ui_lblMotorTmp, 100);
     lv_obj_set_align(ui_lblMotorTmp, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_lblMotorTmp, "Motor: 39C");
+    lv_label_set_text(ui_lblMotorTmp, "0");
+    lv_obj_set_style_text_color(ui_lblMotorTmp, lv_color_hex(0xE27E0B), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_lblMotorTmp, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_lblMotorTmp, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_lblFault = lv_label_create(ui_mainScreen);
     lv_obj_set_width(ui_lblFault, LV_SIZE_CONTENT);   /// 1
@@ -170,26 +196,133 @@ void ui_mainScreen_screen_init(void)
     lv_obj_set_width(ui_lblTrip, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_lblTrip, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_lblTrip, 0);
-    lv_obj_set_y(ui_lblTrip, 130);
+    lv_obj_set_y(ui_lblTrip, 125);
     lv_obj_set_align(ui_lblTrip, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_lblTrip, "Trip: 12 km");
+    lv_label_set_text(ui_lblTrip, "0");
+    lv_obj_set_style_text_color(ui_lblTrip, lv_color_hex(0xE27E0B), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_lblTrip, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_lblTrip, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_lblOdo = lv_label_create(ui_mainScreen);
     lv_obj_set_width(ui_lblOdo, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_lblOdo, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_lblOdo, 0);
-    lv_obj_set_y(ui_lblOdo, 159);
+    lv_obj_set_y(ui_lblOdo, 150);
     lv_obj_set_align(ui_lblOdo, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_lblOdo, "ODO: 1321 km");
+    lv_label_set_text(ui_lblOdo, "0");
+    lv_obj_set_style_text_color(ui_lblOdo, lv_color_hex(0xE27E0B), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_lblOdo, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_lblOdo, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_btnInfo = lv_button_create(ui_mainScreen);
-    lv_obj_set_width(ui_btnInfo, 100);
+    lv_obj_set_width(ui_btnInfo, 50);
     lv_obj_set_height(ui_btnInfo, 50);
-    lv_obj_set_x(ui_btnInfo, -4);
-    lv_obj_set_y(ui_btnInfo, 199);
+    lv_obj_set_x(ui_btnInfo, 118);
+    lv_obj_set_y(ui_btnInfo, 201);
     lv_obj_set_align(ui_btnInfo, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_btnInfo, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
     lv_obj_remove_flag(ui_btnInfo, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
+    ui_txtPower = lv_label_create(ui_mainScreen);
+    lv_obj_set_width(ui_txtPower, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_txtPower, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_txtPower, -62);
+    lv_obj_set_y(ui_txtPower, -50);
+    lv_obj_set_align(ui_txtPower, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_txtPower, "Power:");
+
+    ui_txtVolt = lv_label_create(ui_mainScreen);
+    lv_obj_set_width(ui_txtVolt, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_txtVolt, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_txtVolt, -62);
+    lv_obj_set_y(ui_txtVolt, -25);
+    lv_obj_set_align(ui_txtVolt, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_txtVolt, "Voltage:");
+
+    ui_txtCurrent = lv_label_create(ui_mainScreen);
+    lv_obj_set_width(ui_txtCurrent, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_txtCurrent, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_txtCurrent, -62);
+    lv_obj_set_y(ui_txtCurrent, 0);
+    lv_obj_set_align(ui_txtCurrent, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_txtCurrent, "Current:");
+
+    ui_txtTemp = lv_label_create(ui_mainScreen);
+    lv_obj_set_width(ui_txtTemp, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_txtTemp, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_txtTemp, -62);
+    lv_obj_set_y(ui_txtTemp, 25);
+    lv_obj_set_align(ui_txtTemp, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_txtTemp, "Mosfet:");
+
+    ui_txtPas = lv_label_create(ui_mainScreen);
+    lv_obj_set_width(ui_txtPas, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_txtPas, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_txtPas, -62);
+    lv_obj_set_y(ui_txtPas, 50);
+    lv_obj_set_align(ui_txtPas, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_txtPas, "PAS:");
+
+    ui_txtRpm = lv_label_create(ui_mainScreen);
+    lv_obj_set_width(ui_txtRpm, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_txtRpm, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_txtRpm, -62);
+    lv_obj_set_y(ui_txtRpm, 75);
+    lv_obj_set_align(ui_txtRpm, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_txtRpm, "RPM:");
+
+    ui_txtMotorTmp = lv_label_create(ui_mainScreen);
+    lv_obj_set_width(ui_txtMotorTmp, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_txtMotorTmp, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_txtMotorTmp, -62);
+    lv_obj_set_y(ui_txtMotorTmp, 100);
+    lv_obj_set_align(ui_txtMotorTmp, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_txtMotorTmp, "Motor:");
+
+    ui_txtTrip = lv_label_create(ui_mainScreen);
+    lv_obj_set_width(ui_txtTrip, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_txtTrip, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_txtTrip, -62);
+    lv_obj_set_y(ui_txtTrip, 125);
+    lv_obj_set_align(ui_txtTrip, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_txtTrip, "Trip:");
+
+    ui_txtOdo = lv_label_create(ui_mainScreen);
+    lv_obj_set_width(ui_txtOdo, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_txtOdo, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_txtOdo, -62);
+    lv_obj_set_y(ui_txtOdo, 150);
+    lv_obj_set_align(ui_txtOdo, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_txtOdo, "ODO:");
+
+    ui_txtInfo = lv_label_create(ui_mainScreen);
+    lv_obj_set_width(ui_txtInfo, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_txtInfo, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_txtInfo, 117);
+    lv_obj_set_y(ui_txtInfo, 201);
+    lv_obj_set_align(ui_txtInfo, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_txtInfo, "Info");
+
+    ui_lblGearDisplay = lv_label_create(ui_mainScreen);
+    lv_obj_set_width(ui_lblGearDisplay, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_lblGearDisplay, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_lblGearDisplay, 87);
+    lv_obj_set_y(ui_lblGearDisplay, 32);
+    lv_obj_set_align(ui_lblGearDisplay, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_lblGearDisplay, "gear");
+    lv_obj_set_style_text_color(ui_lblGearDisplay, lv_color_hex(0x00C7E4), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_lblGearDisplay, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_lblGearDisplay, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_lblCruiseStatus = lv_label_create(ui_mainScreen);
+    lv_obj_set_width(ui_lblCruiseStatus, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_lblCruiseStatus, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_lblCruiseStatus, 56);
+    lv_obj_set_y(ui_lblCruiseStatus, -187);
+    lv_obj_set_align(ui_lblCruiseStatus, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_lblCruiseStatus, "cruise");
+    lv_obj_set_style_text_color(ui_lblCruiseStatus, lv_color_hex(0xFE8C02), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_lblCruiseStatus, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_btnInfo, ui_event_btnInfo, LV_EVENT_ALL, NULL);
 
@@ -218,6 +351,18 @@ void ui_mainScreen_screen_destroy(void)
     ui_lblTrip = NULL;
     ui_lblOdo = NULL;
     ui_btnInfo = NULL;
+    ui_txtPower = NULL;
+    ui_txtVolt = NULL;
+    ui_txtCurrent = NULL;
+    ui_txtTemp = NULL;
+    ui_txtPas = NULL;
+    ui_txtRpm = NULL;
+    ui_txtMotorTmp = NULL;
+    ui_txtTrip = NULL;
+    ui_txtOdo = NULL;
+    ui_txtInfo = NULL;
+    ui_lblGearDisplay = NULL;
+    ui_lblCruiseStatus = NULL;
 
 }
 

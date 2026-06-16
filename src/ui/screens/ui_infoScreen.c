@@ -37,7 +37,7 @@ void ui_infoScreen_screen_init(void)
     ui_lblFirmware = lv_label_create(ui_infoScreen);
     lv_obj_set_width(ui_lblFirmware, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_lblFirmware, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_lblFirmware, -119);
+    lv_obj_set_x(ui_lblFirmware, -115);
     lv_obj_set_y(ui_lblFirmware, -198);
     lv_obj_set_align(ui_lblFirmware, LV_ALIGN_CENTER);
     lv_label_set_text(ui_lblFirmware, "firmware");
@@ -45,7 +45,7 @@ void ui_infoScreen_screen_init(void)
     ui_lblSpeedGear = lv_label_create(ui_infoScreen);
     lv_obj_set_width(ui_lblSpeedGear, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_lblSpeedGear, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_lblSpeedGear, -138);
+    lv_obj_set_x(ui_lblSpeedGear, -115);
     lv_obj_set_y(ui_lblSpeedGear, -176);
     lv_obj_set_align(ui_lblSpeedGear, LV_ALIGN_CENTER);
     lv_label_set_text(ui_lblSpeedGear, "Gear");
@@ -53,7 +53,7 @@ void ui_infoScreen_screen_init(void)
     ui_lblDirection = lv_label_create(ui_infoScreen);
     lv_obj_set_width(ui_lblDirection, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_lblDirection, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_lblDirection, -118);
+    lv_obj_set_x(ui_lblDirection, -115);
     lv_obj_set_y(ui_lblDirection, -154);
     lv_obj_set_align(ui_lblDirection, LV_ALIGN_CENTER);
     lv_label_set_text(ui_lblDirection, "Direction");
@@ -61,7 +61,7 @@ void ui_infoScreen_screen_init(void)
     ui_lblCruise = lv_label_create(ui_infoScreen);
     lv_obj_set_width(ui_lblCruise, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_lblCruise, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_lblCruise, -130);
+    lv_obj_set_x(ui_lblCruise, -115);
     lv_obj_set_y(ui_lblCruise, -131);
     lv_obj_set_align(ui_lblCruise, LV_ALIGN_CENTER);
     lv_label_set_text(ui_lblCruise, "Cruise");
@@ -69,7 +69,7 @@ void ui_infoScreen_screen_init(void)
     ui_lblMultiMode = lv_label_create(ui_infoScreen);
     lv_obj_set_width(ui_lblMultiMode, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_lblMultiMode, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_lblMultiMode, -134);
+    lv_obj_set_x(ui_lblMultiMode, -115);
     lv_obj_set_y(ui_lblMultiMode, -109);
     lv_obj_set_align(ui_lblMultiMode, LV_ALIGN_CENTER);
     lv_label_set_text(ui_lblMultiMode, "Mode");
@@ -77,7 +77,7 @@ void ui_infoScreen_screen_init(void)
     ui_lblCpu = lv_label_create(ui_infoScreen);
     lv_obj_set_width(ui_lblCpu, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_lblCpu, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_lblCpu, -140);
+    lv_obj_set_x(ui_lblCpu, -115);
     lv_obj_set_y(ui_lblCpu, -86);
     lv_obj_set_align(ui_lblCpu, LV_ALIGN_CENTER);
     lv_label_set_text(ui_lblCpu, "Cpu");
@@ -85,7 +85,7 @@ void ui_infoScreen_screen_init(void)
     ui_lblEncoder = lv_label_create(ui_infoScreen);
     lv_obj_set_width(ui_lblEncoder, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_lblEncoder, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_lblEncoder, -138);
+    lv_obj_set_x(ui_lblEncoder, -115);
     lv_obj_set_y(ui_lblEncoder, -62);
     lv_obj_set_align(ui_lblEncoder, LV_ALIGN_CENTER);
     lv_label_set_text(ui_lblEncoder, "Enc");
@@ -93,7 +93,7 @@ void ui_infoScreen_screen_init(void)
     ui_lblPasRpm = lv_label_create(ui_infoScreen);
     lv_obj_set_width(ui_lblPasRpm, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_lblPasRpm, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_lblPasRpm, -122);
+    lv_obj_set_x(ui_lblPasRpm, -115);
     lv_obj_set_y(ui_lblPasRpm, -41);
     lv_obj_set_align(ui_lblPasRpm, LV_ALIGN_CENTER);
     lv_label_set_text(ui_lblPasRpm, "Pas rpm");
@@ -101,7 +101,7 @@ void ui_infoScreen_screen_init(void)
     ui_lblErrorCode = lv_label_create(ui_infoScreen);
     lv_obj_set_width(ui_lblErrorCode, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_lblErrorCode, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_lblErrorCode, -139);
+    lv_obj_set_x(ui_lblErrorCode, -115);
     lv_obj_set_y(ui_lblErrorCode, -18);
     lv_obj_set_align(ui_lblErrorCode, LV_ALIGN_CENTER);
     lv_label_set_text(ui_lblErrorCode, "Err");
@@ -109,7 +109,7 @@ void ui_infoScreen_screen_init(void)
     ui_lblControllerId = lv_label_create(ui_infoScreen);
     lv_obj_set_width(ui_lblControllerId, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_lblControllerId, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_lblControllerId, -129);
+    lv_obj_set_x(ui_lblControllerId, -115);
     lv_obj_set_y(ui_lblControllerId, 5);
     lv_obj_set_align(ui_lblControllerId, LV_ALIGN_CENTER);
     lv_label_set_text(ui_lblControllerId, "ESC ID");
