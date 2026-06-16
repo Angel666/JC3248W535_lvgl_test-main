@@ -47,6 +47,8 @@ struct BikeData
     bool esc_online = false;
     uint32_t last_packet_ms = 0;
 
+    bool ble_connected;          // Статус подключения по BLE
+
     // одометр
 
     uint32_t trip_distance_m = 0;

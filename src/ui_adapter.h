@@ -51,3 +51,6 @@ void ui_set_controller_id(uint8_t id);
 // Функции для переключения экранов
 void ui_switch_to_main_screen(void);
 void ui_switch_to_info_screen(void);
+
+//BT status
+void ui_set_ble_status(bool connected);

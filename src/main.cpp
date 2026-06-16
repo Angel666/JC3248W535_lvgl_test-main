@@ -14,6 +14,7 @@
 #include "ft85bd_uart.h"
 #include "storage.h"
 #include "ui_adapter.h"
+#include "ble_bridge.h"
 
 #include <Arduino.h>
 #include "pincfg.h"
@@ -151,6 +152,7 @@ void setup() {
 
    ft85bd_init(); 
    ui_init();
+   ble_bridge_init();
 
    bikeData.speed_kmh = 0;
    bikeData.battery_voltage = 0;
@@ -158,12 +160,15 @@ void setup() {
    bikeData.battery_power = 0;
    bikeData.controller_temp = 0;
    bikeData.pas_level = 0;
-
-   ft85bd_update();
-   dashboard_update();
+  
 }
 
 void loop() {
+    ft85bd_update();
+    dashboard_update();
     lv_task_handler();
     gfx->flush();
+    // 3. Обновление BLE моста (отправка данных на телефон)
+    ble_bridge_update();
+   
 }

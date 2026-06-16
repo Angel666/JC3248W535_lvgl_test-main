@@ -326,6 +326,20 @@ void ui_set_controller_id(uint8_t id)
     }
 }
 
+void ui_set_ble_status(bool connected)
+{
+    if (ui_lblBT == NULL) return;
+
+    // Меняем цвет BT в зависимости от статуса
+    lv_color_t color;
+    if (connected) {
+        color = lv_color_hex(0x00FF00); // Зеленый - подключен
+    } else {
+        color = lv_color_hex(0x888888); // Серый - нет подключения
+    }
+    lv_obj_set_style_bg_color(ui_lblBT, color, LV_PART_MAIN);
+}
+
 // ===== ФУНКЦИИ ПЕРЕКЛЮЧЕНИЯ ЭКРАНОВ =====
 
 void ui_switch_to_main_screen(void)

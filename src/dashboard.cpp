@@ -80,4 +80,7 @@ void dashboard_update()
     ui_set_error_code(bikeData.error_code);
     ui_set_controller_id(bikeData.controller_id);
 
+    //BT status
+    ui_set_ble_status(bikeData.ble_connected);
+
 }
