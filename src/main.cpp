@@ -16,6 +16,8 @@
 #include "ui_adapter.h"
 #include "ble_bridge.h"
 #include "buttons.h"
+#include "sd_config.h"
+#include "speed_sensor.h"
 
 #include <Arduino.h>
 #include "pincfg.h"
@@ -23,12 +25,18 @@
 #include "AXS15231B_touch.h"
 #include <Arduino_GFX_Library.h>
 
+// ============================================================
+//  ДИСПЛЕЙ И СЕНСОР
+// ============================================================
 
 Arduino_DataBus *bus = new Arduino_ESP32QSPI(TFT_CS, TFT_SCK, TFT_SDA0, TFT_SDA1, TFT_SDA2, TFT_SDA3);
 Arduino_GFX *g = new Arduino_AXS15231B(bus, GFX_NOT_DEFINED, 0, false, TFT_res_W, TFT_res_H);
 Arduino_Canvas *gfx = new Arduino_Canvas(TFT_res_W, TFT_res_H, g, 0, 0, TFT_rot);
 AXS15231B_Touch touch(Touch_SCL, Touch_SDA, Touch_INT, Touch_ADDR, TFT_rot);
 
+// ============================================================
+//  LVGL НАСТРОЙКИ
+// ============================================================
 
 #if LV_USE_LOG != 0
 // Log to serial console
@@ -51,7 +59,7 @@ void my_disp_flush(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map) {
 
     gfx->draw16bitRGBBitmap(area->x1, area->y1, (uint16_t *)px_map, w, h);
 
-    // Call it to tell LVGL everthing is ready
+    // Call it to tell LVGL everything is ready
     lv_disp_flush_ready(disp);
 }
 
@@ -71,18 +79,26 @@ void my_touchpad_read(lv_indev_t *indev, lv_indev_data_t *data) {
     }
 }
 
+// ============================================================
+//  SETUP
+// ============================================================
+
 void setup() {
     #ifdef ARDUINO_USB_CDC_ON_BOOT
     delay(2000);
     #endif
 
     Serial.begin(115200);
+    Serial.println("\n\n=== E-Bike Display Starting ===");
+    
+    // ===== 1. ЗАГРУЗКА ОДОМЕТРА =====
     storage_init();
+    bikeData.odometer_km = storage_load_odometer();
+    bikeData.trip_distance_m = 0;
+    Serial.printf("Odometer loaded: %.1f km\n", (float)bikeData.odometer_km);
 
-    bikeData.odometer_km =
-    storage_load_odometer();
-
-    Serial.println("Arduino_GFX LVGL ");
+    // ===== 2. ИНИЦИАЛИЗАЦИЯ ДИСПЛЕЯ =====
+    Serial.println("Arduino_GFX LVGL");
     String LVGL_Arduino = String('V') + lv_version_major() + "." + lv_version_minor() + "." + lv_version_patch() + " example";
     Serial.println(LVGL_Arduino);
 
@@ -105,7 +121,7 @@ void setup() {
     touch.enOffsetCorrection(true);
     touch.setOffsets(Touch_X_min, Touch_X_max, TFT_res_W-1, Touch_Y_min, Touch_Y_max, TFT_res_H-1);
 
-    // Init LVGL
+    // ===== 3. ИНИЦИАЛИЗАЦИЯ LVGL =====
     lv_init();
 
     // Set a tick source so that LVGL will know how much time elapsed
@@ -127,7 +143,6 @@ void setup() {
     }
 
     // Initialize the display driver
-    
     lv_display_t *disp = lv_display_create(screenWidth, screenHeight);
     lv_display_set_flush_cb(disp, my_disp_flush);
     lv_display_set_buffers(disp, disp_draw_buf, NULL, bufSize * 2, LV_DISPLAY_RENDER_MODE_PARTIAL);
@@ -137,47 +152,99 @@ void setup() {
     lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
     lv_indev_set_read_cb(indev, my_touchpad_read);
 
-    /* Option 1: Create a simple label */
-    //lv_obj_t *label = lv_label_create(lv_scr_act());
-    //lv_label_set_text(label, "Hello Arduino, I'm LVGL!(V" GFX_STR(LVGL_VERSION_MAJOR) "." GFX_STR(LVGL_VERSION_MINOR) "." GFX_STR//(LVGL_VERSION_PATCH) ")");
-    //lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
+    // ===== 4. ЗАГРУЗКА UI (из SquareLine Studio) =====
+    ui_init();
+    Serial.println("UI loaded");
 
-    /* Option 2: LVGL Demo. 
-       Don't forget to enable the demos in lv_conf.h. E.g. LV_USE_DEMOS_WIDGETS
-    */
-    //lv_demo_widgets();
-    // lv_demo_benchmark();
-    // lv_demo_keypad_encoder();
-    // lv_demo_music();
-    // lv_demo_stress();
+    // ===== 5. ИНИЦИАЛИЗАЦИЯ FT85BD UART =====
+    ft85bd_init();
+    Serial.println("FT85BD UART initialized");
 
-   
-    
-   buttons_init();
-   ft85bd_init(); 
-   ui_init();
-   ble_bridge_init();
+    // ===== 6. ИНИЦИАЛИЗАЦИЯ ДАТЧИКА СКОРОСТИ (Холл) =====
+    speed_sensor_init();
+    Serial.println("Speed sensor initialized");
 
-   bikeData.speed_kmh = 0;
-   bikeData.battery_voltage = 0;
-   bikeData.battery_current = 0;
-   bikeData.battery_power = 0;
-   bikeData.controller_temp = 0;
-   bikeData.pas_level = 0;
-   // Установка начальных значений
-   bikeData.current_gear = 0;
-   bikeData.target_current = 15.0f;  // 15A (можно позже брать из настроек)
-   bikeData.cruise_requested = false;
-  
+    // ===== 7. ИНИЦИАЛИЗАЦИЯ SD-КАРТЫ =====
+    bool sd_ok = sd_init();
+
+    // ===== 8. ЗАГРУЗКА НАСТРОЕК ПЕРЕДАЧ (PAS) =====
+    bool loaded = false;
+
+    if(sd_ok) {
+        loaded = sd_load_gear_settings(bikeData.pas_gear_currents);
+        if(loaded) {
+            Serial.println("Gear settings loaded from SD card");
+        } else {
+            Serial.println("Using default gear settings");
+        }
+    } else {
+        loaded = load_from_preferences(bikeData.pas_gear_currents);
+        if(loaded) {
+            Serial.println("Gear settings loaded from Preferences");
+        }
+    }
+
+    // Дефолтные значения, если ничего не загрузилось
+    if(!loaded) {
+        bikeData.pas_gear_currents[0] = 5.0f;   // 1-я передача
+        bikeData.pas_gear_currents[1] = 10.0f;  // 2-я передача
+        bikeData.pas_gear_currents[2] = 15.0f;  // 3-я передача
+        bikeData.pas_gear_currents[3] = 20.0f;  // 4-я передача
+        bikeData.pas_gear_currents[4] = 25.0f;  // 5-я передача
+
+        // Сохраняем дефолтные значения
+        if(sd_ok) {
+            sd_save_gear_settings(bikeData.pas_gear_currents);
+        } else {
+            save_to_preferences(bikeData.pas_gear_currents);
+        }
+        Serial.println("Default gear settings saved");
+    }
+
+    // ===== 9. ИНИЦИАЛИЗАЦИЯ КНОПОК =====
+    buttons_init();
+    Serial.println("Buttons initialized");
+
+    // ===== 10. ИНИЦИАЛИЗАЦИЯ BLE =====
+    ble_bridge_init();
+    Serial.println("BLE bridge initialized");
+
+    // ===== 11. НАЧАЛЬНЫЕ ЗНАЧЕНИЯ =====
+    bikeData.pas_gear = 0;          // N (нейтраль)
+    bikeData.cruise_requested = false;
+    bikeData.ble_connected = false;
+    bikeData.braking = false;
+    bikeData.esc_online = false;
+
+    // ===== 12. ЗАПРОС ВЕРСИИ ПРОШИВКИ =====
+    ft85bd_request_firmware();
+
+    Serial.println("=== Setup Complete ===");
 }
 
+// ============================================================
+//  LOOP
+// ============================================================
+
 void loop() {
+    // ===== 1. ОБНОВЛЕНИЕ UART (FT85BD) =====
     ft85bd_update();
+
+    // ===== 2. ОБНОВЛЕНИЕ ДАННЫХ ДАШБОРДА =====
     dashboard_update();
-    lv_task_handler();
-    gfx->flush();
-    // 3. Обновление BLE моста отправка данных на телефон
+
+    // ===== 3. ОБНОВЛЕНИЕ КНОПОК =====
+    buttons_update();
+
+    // ===== 4. ОБНОВЛЕНИЕ ДАТЧИКА СКОРОСТИ =====
+    speed_sensor_update();
+
+    // ===== 5. ОБНОВЛЕНИЕ BLE =====
     ble_bridge_update();
-    buttons_update();  // Проверка кнопок
-   
+
+    // ===== 6. ОБНОВЛЕНИЕ LVGL =====
+    lv_task_handler();
+
+    // ===== 7. ОБНОВЛЕНИЕ ДИСПЛЕЯ (GFX) =====
+    gfx->flush();
 }

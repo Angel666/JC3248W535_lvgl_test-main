@@ -1,353 +1,234 @@
+#include <Arduino.h>
 #include <stdio.h>
-
 #include <lvgl.h>
-
 #include "ui/ui.h"
 #include "ui_adapter.h"
+#include "bike_data.h"
+#include "ft85bd_uart.h"
 
-void ui_set_speed(float speed)
-{
-    char buf[16];
+// ============================================================
+//  ЭКРАН 1: scrMain
+// ============================================================
 
-    snprintf(buf, sizeof(buf), "%.0f", speed);
-
-    lv_label_set_text(ui_lblSpeed, buf);
-}
-
-void ui_set_voltage(float voltage)
-{
-    char buf[16];
-
-    snprintf(buf, sizeof(buf), "%.1f V", voltage);
-
-    lv_label_set_text(ui_lblVolt, buf);
-}
-
-void ui_set_current(float current)
-{
-    char buf[16];
-
-    snprintf(buf, sizeof(buf), "%.1f A", current);
-
-    lv_label_set_text(ui_lblCurrent, buf);
-}
-
-void ui_set_power(float power)
-{
-    char buf[16];
-
-    snprintf(buf, sizeof(buf), "%.0f W", power);
-
-    lv_label_set_text(ui_lblWatt, buf);
-}
-
-void ui_set_pas(int pas)
-{
-    char buf[16];
-
-    snprintf(buf, sizeof(buf), "PAS %d", pas);
-
-    lv_label_set_text(ui_lblPas, buf);
-}
-
-void ui_set_temp(float temp)
-{
-    char buf[16];
-
-    snprintf(buf, sizeof(buf), "ESC %.0fC", temp);
-
-    lv_label_set_text(ui_lblTemp, buf);
-}
-
-void ui_set_motor_temp(float temp)
-{
-    char buf[16];
-
-    snprintf(buf,
-             sizeof(buf),
-             "MTR %.0fC",
-             temp);
-
-    lv_label_set_text(ui_lblMotorTmp, buf);
-}
-
-void ui_set_battery_percent(int percent)
-{
-    char buf[16];
-
-    snprintf(buf,
-             sizeof(buf),
-             "%d%%",
-             percent);
-
-    lv_label_set_text(ui_lblBat, buf);
-}
-
-void ui_set_bluetooth(bool connected)
-{
-    if(connected)
-        lv_label_set_text(ui_lblBT, "BT ON");
-    else
-        lv_label_set_text(ui_lblBT, "BT OFF");
-}
-
-void ui_set_time(const char* text)
-{
-    lv_label_set_text(ui_lblTime, text);
-}
-
-void ui_set_status(bool online)
-{
-    if(online)
-        lv_label_set_text(ui_lblBT, "ESC OK");
-    else
-        lv_label_set_text(ui_lblBT, "ESC OFF");
-}
-
-void ui_set_rpm(float rpm)
-{
-    char buf[20];
-
-    snprintf(buf,
-             sizeof(buf),
-             "%.0f RPM",
-             rpm);
-
-    lv_label_set_text(ui_lblRpm, buf);
-}
-
-void ui_set_fault(int fault)
-{
-    char buf[20];
-
-    snprintf(buf,
-             sizeof(buf),
-             "ERR %d",
-             fault);
-
-    lv_label_set_text(ui_lblFault, buf);
-}
-
-void ui_set_trip(float km)
-{
-    char buf[20];
-
-    snprintf(buf,
-             sizeof(buf),
-             "TRIP %.1f",
-             km);
-
-    lv_label_set_text(ui_lblTrip, buf);
-}
-
-void ui_set_odo(uint32_t km)
-{
-    char buf[20];
-
-    snprintf(buf,
-             sizeof(buf),
-             "ODO %lu",
-             (unsigned long)km);
-
-    lv_label_set_text(ui_lblOdo, buf);
-}
-
-void ui_set_moving(bool moving)
-{
-    lv_label_set_text(ui_lblBT,
-        moving ? "MOVING" : "STOP");
-}
-
-void ui_set_pedaling(bool pedaling)
-{
-    lv_label_set_text(ui_lblTime,
-        pedaling ? "PEDAL" : "IDLE");
-}
-
-// ===== НОВЫЕ ФУНКЦИИ ДЛЯ РАСШИРЕННЫХ ДАННЫХ =====
-
-// Версия прошивки
-void ui_set_firmware_version(const char* version)
-{
-    char buf[32];
-    snprintf(buf, sizeof(buf), "FW: %s", version);
-    
-    // Обновляем на infoScreen (если виджет существует)
-    if(ui_lblFirmware != NULL) {
-        lv_label_set_text(ui_lblFirmware, buf);
+void ui_set_speed(float speed) {
+    if(ui_lblSpeed) {
+        char buf[16];
+        snprintf(buf, sizeof(buf), "%.0f", speed);
+        lv_label_set_text(ui_lblSpeed, buf);
     }
 }
 
-// Передача / ограничение скорости
-void ui_set_speed_gear(uint8_t gear)
-{
-    const char* gear_text = "";
-    switch(gear) {
-        case 0: gear_text = "No limit"; break;
-        case 1: gear_text = "Low"; break;
-        case 2: gear_text = "Medium"; break;
-        case 3: gear_text = "High"; break;
-        case 4: gear_text = "Reverse"; break;
-        default: gear_text = "Unknown"; break;
-    }
-    
-    char buf[32];
-    snprintf(buf, sizeof(buf), "Speed: %s", gear_text);
-    
-    if(ui_lblSpeedGear != NULL) {
-        lv_label_set_text(ui_lblSpeedGear, buf);
+void ui_set_speed_arc(float speed, float max_speed) {
+    if(ui_arcSpeed) {
+        int value = (int)((speed / max_speed) * 100);
+        if(value > 100) value = 100;
+        lv_arc_set_value(ui_arcSpeed, value);
     }
 }
 
-// Направление движения
-void ui_set_motor_direction(uint8_t direction)
-{
-    const char* dir_text = (direction == 0) ? "→ FWD" : "← REV";
-    char buf[16];
-    snprintf(buf, sizeof(buf), "Dir: %s", dir_text);
-    
-    if(ui_lblDirection != NULL) {
-        lv_label_set_text(ui_lblDirection, buf);
-        
-        // Меняем цвет для наглядности
-        if(direction == 0) {
-            lv_obj_set_style_text_color(ui_lblDirection, lv_color_hex(0x00AAFF), 0);
+void ui_set_battery_bar(int percent) {
+    if(ui_sldBatt) {
+        lv_slider_set_value(ui_sldBatt, percent, LV_ANIM_OFF);
+        lv_color_t color;
+        if(percent < 20) color = lv_color_hex(0xFF0000);
+        else if(percent < 50) color = lv_color_hex(0xFFA500);
+        else color = lv_color_hex(0x00CC00);
+        lv_obj_set_style_bg_color(ui_sldBatt, color, LV_PART_INDICATOR);
+    }
+}
+
+void ui_set_battery_percent(int percent) {
+    if(ui_lblBatt) {
+        char buf[8];
+        snprintf(buf, sizeof(buf), "%d%%", percent);
+        lv_label_set_text(ui_lblBatt, buf);
+    }
+}
+
+void ui_set_voltage(float voltage) {
+    if(ui_lblVoltage) {
+        char buf[16];
+        snprintf(buf, sizeof(buf), "%.1fV", voltage);
+        lv_label_set_text(ui_lblVoltage, buf);
+    }
+}
+
+void ui_set_power(float power) {
+    if(ui_lblPower) {
+        char buf[16];
+        snprintf(buf, sizeof(buf), "%.0fW", power);
+        lv_label_set_text(ui_lblPower, buf);
+    }
+}
+
+// ===== PAS ПЕРЕДАЧА (6 позиций: N, 1, 2, 3, 4, 5) =====
+void ui_set_pas_gear(uint8_t gear) {
+    if(ui_lblGear) {
+        const char* names[] = {"N", "1", "2", "3", "4", "5"};
+        if(gear <= 5) {
+            lv_label_set_text(ui_lblGear, names[gear]);
+        }
+    }
+}
+
+void ui_set_pas(int pas) {
+    if(ui_lblPAS) {
+        char buf[8];
+        snprintf(buf, sizeof(buf), "PAS %d", pas);
+        lv_label_set_text(ui_lblPAS, buf);
+    }
+}
+
+void ui_set_odo(uint32_t km) {
+    if(ui_lblODO) {
+        char buf[20];
+        snprintf(buf, sizeof(buf), "%.1f km", (float)km);
+        lv_label_set_text(ui_lblODO, buf);
+    }
+}
+
+void ui_set_trip(float km) {
+    if(ui_lblTrip) {
+        char buf[20];
+        snprintf(buf, sizeof(buf), "%.1f km", km);
+        lv_label_set_text(ui_lblTrip, buf);
+    }
+}
+
+void ui_set_avg_speed(float speed) {
+    if(ui_lblAVG) {
+        char buf[16];
+        snprintf(buf, sizeof(buf), "%.1f", speed);
+        lv_label_set_text(ui_lblAVG, buf);
+    }
+}
+
+void ui_set_max_speed(float speed) {
+    if(ui_lblMAXspd) {
+        char buf[16];
+        snprintf(buf, sizeof(buf), "%.1f", speed);
+        lv_label_set_text(ui_lblMAXspd, buf);
+    }
+}
+
+// ============================================================
+//  КОНТЕЙНЕРЫ
+// ============================================================
+
+void ui_set_cruise_visible(bool visible) {
+    if(ui_contCruise) {
+        if(visible) {
+            lv_obj_clear_flag(ui_contCruise, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_set_style_bg_color(ui_contCruise, lv_color_hex(0x00AA00), 0);
         } else {
-            lv_obj_set_style_text_color(ui_lblDirection, lv_color_hex(0xFF5500), 0);
+            lv_obj_add_flag(ui_contCruise, LV_OBJ_FLAG_HIDDEN);
         }
     }
 }
 
-// Статус круиз-контроля
-void ui_set_cruise_status(bool enabled, bool active)
-{
-    char buf[32];
-    
-    if(active) {
-        snprintf(buf, sizeof(buf), "CRUISE ACTIVE");
-        if(ui_lblCruise != NULL) {
-            lv_label_set_text(ui_lblCruise, buf);
-            lv_obj_set_style_text_color(ui_lblCruise, lv_color_hex(0x00FF00), 0);
+void ui_set_brake_visible(bool visible) {
+    if(ui_contBrake) {
+        if(visible) {
+            lv_obj_clear_flag(ui_contBrake, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_set_style_bg_color(ui_contBrake, lv_color_hex(0xFF0000), 0);
+        } else {
+            lv_obj_add_flag(ui_contBrake, LV_OBJ_FLAG_HIDDEN);
         }
-    } else if(enabled) {
-        snprintf(buf, sizeof(buf), "Cruise: Ready");
-        if(ui_lblCruise != NULL) {
-            lv_label_set_text(ui_lblCruise, buf);
-            lv_obj_set_style_text_color(ui_lblCruise, lv_color_hex(0x888888), 0);
+    }
+}
+
+void ui_set_bt_status(bool connected) {
+    if(ui_contBT) {
+        if(connected) {
+            lv_obj_set_style_bg_color(ui_contBT, lv_color_hex(0x0088FF), 0);
+        } else {
+            lv_obj_set_style_bg_color(ui_contBT, lv_color_hex(0x444444), 0);
         }
+    }
+}
+
+// ============================================================
+//  ЭКРАН 2: scrSettings
+// ============================================================
+
+void ui_set_esc_status(bool online) {
+    if(ui_lblESCstatus) {
+        if(online) {
+            lv_label_set_text(ui_lblESCstatus, "ESC: ONLINE");
+            lv_obj_set_style_text_color(ui_lblESCstatus, lv_color_hex(0x00CC00), 0);
+        } else {
+            lv_label_set_text(ui_lblESCstatus, "ESC: OFFLINE");
+            lv_obj_set_style_text_color(ui_lblESCstatus, lv_color_hex(0xFF0000), 0);
+        }
+    }
+}
+
+void ui_set_cpu_load(float load) {
+    if(ui_lblCPU) {
+        char buf[16];
+        snprintf(buf, sizeof(buf), "CPU: %.1f%%", load);
+        lv_label_set_text(ui_lblCPU, buf);
+    }
+}
+
+void ui_set_mosfet_temp(float temp) {
+    if(ui_lblMosfetTmp) {
+        char buf[16];
+        snprintf(buf, sizeof(buf), "FET: %.0f°C", temp);
+        lv_label_set_text(ui_lblMosfetTmp, buf);
+    }
+}
+
+void ui_set_error_code(uint8_t code) {
+    if(ui_lblERR) {
+        if(code == 0) {
+            lv_label_set_text(ui_lblERR, "Err: 0 OK");
+            lv_obj_set_style_text_color(ui_lblERR, lv_color_hex(0x00CC00), 0);
+        } else {
+            char buf[16];
+            snprintf(buf, sizeof(buf), "Err: %d", code);
+            lv_label_set_text(ui_lblERR, buf);
+            lv_obj_set_style_text_color(ui_lblERR, lv_color_hex(0xFF0000), 0);
+        }
+    }
+}
+
+void ui_set_firmware_version(const char* version) {
+    // Если добавите lblFW на экран настроек
+    // if(ui_lblFW) lv_label_set_text(ui_lblFW, version);
+}
+
+// ============================================================
+//  ОБРАБОТЧИКИ (вызываются из buttons.cpp)
+// ============================================================
+
+void ui_on_pas_gear_up(void) {
+    if(bikeData.pas_gear < 5) {
+        bikeData.pas_gear++;
     } else {
-        snprintf(buf, sizeof(buf), "Cruise: OFF");
-        if(ui_lblCruise != NULL) {
-            lv_label_set_text(ui_lblCruise, buf);
-            lv_obj_set_style_text_color(ui_lblCruise, lv_color_hex(0x444444), 0);
-        }
+        bikeData.pas_gear = 0;
     }
+    ui_set_pas_gear(bikeData.pas_gear);
+    ft85bd_set_pas_gear(bikeData.pas_gear);
 }
 
-// Мульти-режим
-void ui_set_multi_mode(uint8_t mode)
-{
-    const char* mode_text = "Normal";
-    switch(mode) {
-        case 1: mode_text = "Tank U-turn"; break;
-        case 2: mode_text = "Off-road"; break;
-        default: mode_text = "Normal"; break;
-    }
-    
-    char buf[32];
-    snprintf(buf, sizeof(buf), "Mode: %s", mode_text);
-    
-    if(ui_lblMultiMode != NULL) {
-        lv_label_set_text(ui_lblMultiMode, buf);
-    }
-}
-
-// Загрузка CPU
-void ui_set_cpu_load(float load)
-{
-    char buf[16];
-    snprintf(buf, sizeof(buf), "CPU: %.1f%%", load);
-    
-    if(ui_lblCpu != NULL) {
-        lv_label_set_text(ui_lblCpu, buf);
-    }
-}
-
-// Угол энкодера
-void ui_set_encoder_angle(float angle)
-{
-    char buf[24];
-    snprintf(buf, sizeof(buf), "Encoder: %.1f°", angle);
-    
-    if(ui_lblEncoder != NULL) {
-        lv_label_set_text(ui_lblEncoder, buf);
-    }
-}
-
-// PAS RPM
-void ui_set_pas_rpm(float rpm)
-{
-    char buf[24];
-    snprintf(buf, sizeof(buf), "PAS: %.0f RPM", rpm);
-    
-    if(ui_lblPasRpm != NULL) {
-        lv_label_set_text(ui_lblPasRpm, buf);
-    }
-}
-
-// Детальный код ошибки
-void ui_set_error_code(uint8_t error_code)
-{
-    char buf[24];
-    
-    if(error_code > 0) {
-        snprintf(buf, sizeof(buf), "Err code: %d", error_code);
-        if(ui_lblErrorCode != NULL) {
-            lv_label_set_text(ui_lblErrorCode, buf);
-            lv_obj_set_style_text_color(ui_lblErrorCode, lv_color_hex(0xFF0000), 0);
-        }
+void ui_on_pas_gear_down(void) {
+    if(bikeData.pas_gear > 0) {
+        bikeData.pas_gear--;
     } else {
-        snprintf(buf, sizeof(buf), "Err code: 0");
-        if(ui_lblErrorCode != NULL) {
-            lv_label_set_text(ui_lblErrorCode, buf);
-            lv_obj_set_style_text_color(ui_lblErrorCode, lv_color_hex(0x00AA00), 0);
-        }
+        bikeData.pas_gear = 5;
     }
+    ui_set_pas_gear(bikeData.pas_gear);
+    ft85bd_set_pas_gear(bikeData.pas_gear);
 }
 
-// ID контроллера
-void ui_set_controller_id(uint8_t id)
-{
-    char buf[24];
-    snprintf(buf, sizeof(buf), "ESC ID: %d", id);
-    
-    if(ui_lblControllerId != NULL) {
-        lv_label_set_text(ui_lblControllerId, buf);
-    }
-}
-
-void ui_set_ble_status(bool connected)
-{
-    if (ui_lblBT == NULL) return;
-
-    // Меняем цвет BT в зависимости от статуса
-    lv_color_t color;
-    if (connected) {
-        color = lv_color_hex(0x00FF00); // Зеленый - подключен
-    } else {
-        color = lv_color_hex(0x888888); // Серый - нет подключения
-    }
-    lv_obj_set_style_bg_color(ui_lblBT, color, LV_PART_MAIN);
-}
-
-// ===== ФУНКЦИИ ПЕРЕКЛЮЧЕНИЯ ЭКРАНОВ =====
-
-void ui_switch_to_main_screen(void)
-{
-    lv_scr_load_anim(ui_mainScreen, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, false);
-}
-
-void ui_switch_to_info_screen(void)
-{
-    lv_scr_load_anim(ui_infoScreen, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, false);
+void ui_on_cruise_toggle(void) {
+    bikeData.cruise_requested = !bikeData.cruise_requested;
+    uint8_t payload[15] = {0};
+    payload[0] = 0x02;
+    payload[3] = 0x02;
+    payload[4] = 0x00;
+    payload[11] = 0x01;
+    payload[12] = bikeData.cruise_requested ? 0x01 : 0x00;
+    ft85bd_send_packet(payload, 15);
 }

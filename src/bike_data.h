@@ -1,76 +1,67 @@
 #pragma once
 
 #include <stdint.h>
+#include <stdbool.h>
 
-struct BikeData
-{
-    // скорость
-
-    float speed_kmh = 0.0f;
-    float motor_rpm = 0.0f;
-
-    // батарея
-
-    float battery_voltage = 0.0f;
-    float battery_current = 0.0f;
-    float battery_power = 0.0f;
-    int battery_percent = 0;
-    float battery_energy_wh = 0.0f;
-    float battery_energy_percent = 0.0f;
-
-    // мотор
-
-    float motor_current = 0.0f;
-
-    // температуры
-
-    float controller_temp = 0.0f;
-    float motor_temp = 0.0f;
-
-    // контроллер
-    // Заполнение ШИМ (0...100%)
-    float duty_cycle = 0.0f;
-
-    // пользовательские
-
-    int pas_level = 0;
-
-    bool bluetooth_connected = false;
-
-    // ошибки
-
-    uint8_t fault_code = 0;
-
-    // связь
-
-    bool esc_online = false;
-    uint32_t last_packet_ms = 0;
-
-    bool ble_connected;          // Статус подключения по BLE
-
-    // одометр
-
-    uint32_t trip_distance_m = 0;
-    uint32_t odometer_km = 0;
-
-    bool moving = false;
-    bool pedaling = false;
-
-    // ===== НОВЫЕ ПОЛЯ (для второго экрана) =====
-    char firmware_version[16];
-    uint8_t speed_limit_gear;
-    uint8_t motor_direction;
-    bool cruise_enabled;
-    bool cruise_active;
-    bool cruise_requested;         // Запрос на включение круиза
-    uint8_t current_gear;          // Текущая передача (0-3)
-    float target_current;          // Целевой ток (А) — из настроек
-    uint8_t multi_mode_type;
+typedef struct {
+    // ===== ОСНОВНЫЕ ДАННЫЕ =====
+    float battery_voltage;
+    float battery_current;
+    float motor_current;
+    float battery_power;
+    float battery_energy_wh;
+    int battery_percent;
+    float battery_energy_percent;
+    
+    float motor_rpm;
+    float pas_rpm;
+    
+    float controller_temp;
+    float motor_temp;
+    float duty_cycle;
     float cpu_load;
     float encoder_angle;
-    float pas_rpm;
-    uint8_t error_code;
+    
+    uint32_t trip_distance_m;
+    uint32_t odometer_km;
+    
+    uint8_t fault_code;
+    uint8_t pas_level;
+
+    float speed_kmh;           // Скорость от ESC (из RPM)
+    float speed_sensor_kmh;    // Скорость от датчика Холла в моторе
+    float avg_speed;           // Средняя скорость за поездку
+    float max_speed;           // Максимальная скорость за поездку
+
+     // Внутренние счётчики (для расчёта)
+    float speed_sum;           // Сумма скоростей для среднего
+    uint32_t speed_samples;    // Количество измерений
+    float max_speed_recorded;  // Внутренний максимум
+    
+    bool moving;
+    bool pedaling;
+    bool esc_online;
+    bool braking;              // Статус торможения
+    bool cruise_active;        // Статус круиза из ESC
+    bool cruise_requested;     // Запрос на круиз (для кнопки)
+    
+    uint32_t last_packet_ms;
+    
+    // ===== PAS ПЕРЕДАЧИ (6 позиций: N + 1-5) =====
+    uint8_t pas_gear;          // 0=N, 1-5 = передачи
+    float pas_gear_currents[5]; // Токи для передач 1-5 (А) — задаются в коде
+    
+    // ===== СТАТУС BLE =====
+    bool ble_connected;
+    
+    // ===== ДОПОЛНИТЕЛЬНЫЕ ДАННЫЕ =====
+    char firmware_version[16];
     uint8_t controller_id;
-};
+    uint8_t error_code;
+    
+    // ===== СТАТУС SD-КАРТЫ =====
+    bool sd_mounted;
+    bool settings_loaded;
+} BikeData;
 
 extern BikeData bikeData;
